@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script src="https://cdn.plot.ly/plotly-2.6.3.min.js"></script>
+    
+</head>
+<body>
+    <script>
+        function drawDay(day, plotId){
+            var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "POST", location+'speedDistr', false ); // false for synchronous request
+        xmlHttp.setRequestHeader("Content-Type", "application/json");
+
+        json = {
+            "day": day
+        };
+
+        xmlHttp.send(JSON.stringify(json));
+        var histogramjson = xmlHttp.responseText;
+
+        var hist = JSON.parse(histogramjson);
+
+        var histarr = hist.data[0]["histogram(24)(ticktime)"]
+
+        var x = [];
+        var y = [];
+        for (var i = 0; i < histarr.length; i ++) {
+            x[i*2] = histarr[i][0]/60/60;
+            x[i*2+1] = histarr[i][1]/60/60;
+            y[i*2] = histarr[i][2];
+            y[i*2+1] = histarr[i][2];
+        }
+        var trace = {
+            x: x,
+            y: y,
+            type: 'scatter',
+        };
+        var data = [trace];
+        Plotly.newPlot(plotId, data);
+        }
+    </script>
+
+    <div id="plotDiv1"></div>
+    
+    <div id="plotDiv2"></div>
+
+    <div id="plotDiv3"></div>
+    
+    <div id="plotDiv4"></div>
+
+    <script>
+        drawDay(1,"plotDiv1");
+        drawDay(2,"plotDiv2");
+        drawDay(3,"plotDiv3");
+        drawDay(4,"plotDiv4");
+    </script>
+
+</body>
+</html>
